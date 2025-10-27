@@ -1,0 +1,27 @@
+name: Daily Training Pipeline
+
+on:
+  schedule:
+    # Runs at 02:00 UTC every day (after the feature pipeline)
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allows you to run it manually
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily training pipeline
+        env:
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+        run: python daily_training_pipeline.py
