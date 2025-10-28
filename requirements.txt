@@ -1,6 +1,7 @@
 pandas
 requests
-hopsworks
 xgboost
 scikit-learn
 joblib
+hopsworks==4.2.*
+pyarrow
