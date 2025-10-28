@@ -117,7 +117,7 @@ def run_daily_feature_pipeline():
         "pm2_5": "mean", "pm10": "mean", "nh3": "mean"
     }).reset_index()
 
-    new_daily_row["date"] = pd.to_datetime(new_daily_row["date"])
+    new_daily_row["date"] = pd.to_datetime(new_daily_row["date"]).dt.tz_localize('UTC')
     
     # Calculate US AQI
     new_daily_row["us_aqi"] = new_daily_row.apply(compute_us_aqi, axis=1)
@@ -137,6 +137,7 @@ def run_daily_feature_pipeline():
     # Fetch last 10 days of data to calculate new lags/rolling windows
     ten_days_ago = yesterday_utc - timedelta(days=10)
     history_df = aqi_fg.filter(aqi_fg.date > ten_days_ago).read()
+    history_df['date'] = pd.to_datetime(history_df['date']).dt.tz_convert('UTC')
     history_df['date'] = pd.to_datetime(history_df['date'])
     history_df = history_df.sort_values('date')
 
@@ -214,4 +215,5 @@ def run_daily_feature_pipeline():
     print("✅ Daily feature pipeline completed successfully.")
 
 if __name__ == "__main__":
+
     run_daily_feature_pipeline()
