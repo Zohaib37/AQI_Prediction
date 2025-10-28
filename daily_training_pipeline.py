@@ -45,6 +45,7 @@ aqi_model = model_registry.python.create_model(
     description="Gradient Boosting Regressor model for AQI prediction"
 )
 
-aqi_model.save('aqi_xgb_model.pkl')
+aqi_model.save('aqi_gb_model.pkl')
 
 print("New model version saved to registry.")
+
