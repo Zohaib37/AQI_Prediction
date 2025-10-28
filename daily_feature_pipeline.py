@@ -197,7 +197,7 @@ def run_daily_feature_pipeline():
     combined_df['pm2_5_lag_7_day'] = combined_df['pm2_5'].shift(7)
 
     combined_df['date'] = pd.to_datetime(combined_df['date'])
-    combined_df['month'] = combined_df['date'].dt.month
+    combined_df['month'] = combined_df['date'].dt.month.astype('int64')
 
     # 6. Isolate and insert the new, fully-featured row
     final_new_row = combined_df.tail(1)
@@ -217,3 +217,4 @@ def run_daily_feature_pipeline():
 if __name__ == "__main__":
 
     run_daily_feature_pipeline()
+
