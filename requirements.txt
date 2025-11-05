@@ -4,3 +4,4 @@ hopsworks[python]==4.2.*
 xgboost
 scikit-learn
 joblib
+streamlit
