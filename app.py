@@ -79,7 +79,8 @@ def fetch_pollution(start, end):
 def get_model_and_history():
     """Connects to Hopsworks, gets the latest model and 10 days of data."""
     with st.spinner("Connecting to Hopsworks and loading model..."):
-        project = hopsworks.login(api_key_value=HOPSWORKS_KEY)
+        # project = hopsworks.login(api_key_value=HOPSWORKS_KEY)
+        project = hopsworks.login(api_key_value=st.secrets["HOPSWORKS_API_KEY"])
         fs = project.get_feature_store()
         
         mr = project.get_model_registry()
