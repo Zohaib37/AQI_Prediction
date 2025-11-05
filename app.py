@@ -14,7 +14,7 @@ st.set_page_config(
     layout="wide"
 )
 st.title("AQI Prediction Dashboard 🍃")
-st.info("This dashboard uses a trained XGBoost model to forecast the US AQI for the next 3 days.")
+st.info("This dashboard uses a trained Gradient Boosting Regressor model to forecast the US AQI for the next 3 days.")
 
 # --- Suppress specific warnings for a cleaner UI ---
 warnings.filterwarnings("ignore", category=UserWarning, message="The installed hopsworks client version")
