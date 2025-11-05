@@ -91,7 +91,7 @@ def get_model_and_history():
         print("Contents:", os.listdir(model_dir))
         
         model = joblib.load(model_dir + "/aqi_xgb_model.pkl")
-        st.write(f"✅ Model version {model.version} loaded.")
+        # st.write(f"✅ Model version {model.version} loaded.")
         
         aqi_fg = fs.get_feature_group(name="aqi_features", version=1)
         ten_days_ago = datetime.now(UTC).date() - timedelta(days=10)
