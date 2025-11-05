@@ -83,12 +83,23 @@ def get_model_and_history():
         project = hopsworks.login(api_key_value=st.secrets["HOPSWORKS_API_KEY"])
         fs = project.get_feature_store()
         
-        mr = project.get_model_registry()
-        model = mr.get_model(name="aqi_predictor") # Gets latest version
-        model_dir = model.download()
+        # mr = project.get_model_registry()
+        # model = mr.get_model(name="aqi_predictor") # Gets latest version
+        # model_dir = model.download()
         
-        print("Downloaded model directory:", model_dir)
-        print("Contents:", os.listdir(model_dir))
+        # print("Downloaded model directory:", model_dir)
+        # print("Contents:", os.listdir(model_dir))
+
+        mr = project.get_model_registry()
+        model_meta = mr.get_model("aqi_predictor")
+
+        all_versions = mr.get_models(name="aqi_predictor")
+        latest_version = max([m.version for m in all_versions])
+    
+        print(f"Using model version: {latest_version}")
+    
+        model = mr.get_model(name="aqi_predictor", version=latest_version)
+        model_dir = model.download()
         
         model = joblib.load(model_dir + "/aqi_xgb_model.pkl")
         # st.write(f"✅ Model version {model.version} loaded.")
