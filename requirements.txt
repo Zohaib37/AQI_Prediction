@@ -1,4 +1,3 @@
-python==3.11
 pandas
 requests
 hopsworks[python]==4.4.2
