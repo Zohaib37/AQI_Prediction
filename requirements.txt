@@ -6,4 +6,4 @@ scikit-learn
 joblib
 streamlit
 python==3.11
-sqlalchemy<2.0
+sqlalchemy==1.4.52
