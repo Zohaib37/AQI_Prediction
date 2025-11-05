@@ -90,7 +90,7 @@ def get_model_and_history():
         print("Downloaded model directory:", model_dir)
         print("Contents:", os.listdir(model_dir))
         
-        model = joblib.load(model_dir + "/aqi_gb_model.pkl")
+        model = joblib.load(model_dir + "/aqi_xgb_model.pkl")
         st.write(f"✅ Model version {model.version} loaded.")
         
         aqi_fg = fs.get_feature_group(name="aqi_features", version=1)
