@@ -1,6 +1,6 @@
 pandas
 requests
-hopsworks[python]==4.2.*
+hopsworks[python]==4.4.2
 xgboost
 scikit-learn
 joblib
