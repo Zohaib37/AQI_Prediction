@@ -82,13 +82,6 @@ def get_model_and_history():
         # project = hopsworks.login(api_key_value=HOPSWORKS_KEY)
         project = hopsworks.login(api_key_value=st.secrets["HOPSWORKS_API_KEY"])
         fs = project.get_feature_store()
-        
-        # mr = project.get_model_registry()
-        # model = mr.get_model(name="aqi_predictor") # Gets latest version
-        # model_dir = model.download()
-        
-        # print("Downloaded model directory:", model_dir)
-        # print("Contents:", os.listdir(model_dir))
 
         mr = project.get_model_registry()
         model_meta = mr.get_model("aqi_predictor")
@@ -105,7 +98,6 @@ def get_model_and_history():
         print("Contents:", os.listdir(model_dir))
         
         model = joblib.load(model_dir + "/aqi_xgb_model.pkl")
-        # st.write(f"✅ Model version {model.version} loaded.")
         
         aqi_fg = fs.get_feature_group(name="aqi_features", version=1)
         ten_days_ago = datetime.now(UTC).date() - timedelta(days=10)
@@ -213,7 +205,7 @@ try:
 
     predictions = []
     
-    st.header("🚀 3-Day AQI Forecast (Predicted by your Model)")
+    st.header("3-Day AQI Forecast")
     cols = st.columns(3) # Create 3 columns for the 3 days
 
     with st.spinner("Running 3-Day Autoregressive Forecast..."):
