@@ -1,0 +1,1 @@
+# This file forces Streamlit to use the pip installer
