@@ -86,6 +86,10 @@ def get_model_and_history():
         mr = project.get_model_registry()
         model = mr.get_model(name="aqi_predictor") # Gets latest version
         model_dir = model.download()
+        
+        print("Downloaded model directory:", model_dir)
+        print("Contents:", os.listdir(model_dir))
+        
         model = joblib.load(model_dir + "/aqi_gb_model.pkl")
         st.write(f"✅ Model version {model.version} loaded.")
         
