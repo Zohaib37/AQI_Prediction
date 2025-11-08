@@ -1,8 +1,8 @@
+streamlit
+flask
+gunicorn
+hopsworks[python]
+joblib
 pandas
 requests
-hopsworks[python]==4.4.2
-xgboost
 scikit-learn
-joblib
-streamlit
-sqlalchemy==1.4.52
