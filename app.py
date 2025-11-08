@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timedelta, time, UTC # Use UTC
 import warnings
 
-# --- 1. Page Configuration ---
+# Page Configuration
 st.set_page_config(
     page_title="AQI Prediction Dashboard",
     page_icon="🍃",
@@ -16,10 +16,10 @@ st.set_page_config(
 st.title("AQI Prediction Dashboard 🍃")
 st.info("This dashboard uses a trained Gradient Boosting Regressor model to forecast the US AQI for the next 3 days.")
 
-# --- Suppress specific warnings for a cleaner UI ---
+# Suppress specific warnings for a cleaner UI
 warnings.filterwarnings("ignore", category=UserWarning, message="The installed hopsworks client version")
 
-# --- 2. Load Secrets (from Streamlit Secrets) ---
+# Load Secrets (from Streamlit Secrets)
 # When you deploy, set these in Streamlit Cloud's 'Settings' -> 'Secrets'
 try:
     HOPSWORKS_KEY = os.environ.get("HOPSWORKS_API_KEY", st.secrets["HOPSWORKS_API_KEY"])
@@ -31,7 +31,6 @@ except KeyError:
 LAT = 24.8607
 LON = 67.0011
 
-# --- 3. Helper Functions (Copied directly from your script) ---
 breakpoints = {
     "pm2_5": [(0.0, 12.0, 0, 50), (12.1, 35.4, 51, 100), (35.5, 55.4, 101, 150), (55.5, 150.4, 151, 200), (150.5, 250.4, 201, 300), (250.5, 350.4, 301, 400), (350.5, 500.4, 401, 500)],
     "pm10": [(0, 54, 0, 50), (55, 154, 51, 100), (155, 254, 101, 150), (255, 354, 151, 200), (355, 424, 201, 300), (425, 504, 301, 400), (505, 604, 401, 500)],
@@ -73,8 +72,6 @@ def fetch_pollution(start, end):
         })
     return pd.DataFrame(rows)
 
-# --- 4. Caching Data Loading Functions ---
-# @st.cache_resource tells Streamlit to run this func once and save the result (the model)
 @st.cache_resource(ttl=600) # Cache for 10 minutes
 def get_model_and_history():
     """Connects to Hopsworks, gets the latest model and 10 days of data."""
@@ -104,17 +101,12 @@ def get_model_and_history():
         history_df = aqi_fg.filter(aqi_fg.date > ten_days_ago).read()
         history_df['date'] = pd.to_datetime(history_df['date']).dt.tz_convert('UTC')
         history_df = history_df.sort_values('date').dropna() # Drop NaNs
-        st.write(f"✅ Historical data loaded (up to {history_df['date'].max().date()}).")
+        st.write(f"Historical data loaded (up to {history_df['date'].max().date()}).")
         
     return model, history_df
 
-# @st.cache_data tells Streamlit to save the *data* this func returns
 @st.cache_data(ttl=3600) # Cache for 1 hour
 def get_future_weather_and_pollutants():
-    """
-    Fetches 5-day weather & pollution forecast and aggregates to daily.
-    This provides the *INPUTS* for our model.
-    """
     with st.spinner("Fetching 3-day weather & pollutant forecast..."):
         weather_url = f"http://api.openweathermap.org/data/2.5/forecast?lat={LAT}&lon={LON}&appid={API_KEY}"
         r_weather = requests.get(weather_url); r_weather.raise_for_status()
@@ -189,8 +181,6 @@ def get_todays_estimated_data(history_df):
         
     return todays_row
 
-# --- 5. Main Prediction Logic ---
-# This is the exact code from your test script, now wrapped in UI elements
 try:
     model, history_df = get_model_and_history()
     future_inputs_df = get_future_weather_and_pollutants()
@@ -213,7 +203,7 @@ try:
             target_date = (datetime.now(UTC).date() + timedelta(days=i+1))
             target_date_ts = pd.Timestamp(target_date).tz_localize('UTC')
             
-            # --- Build the Feature Row ---
+            # Build the Feature Row
             feature_row = {}
             
             data_lag_1 = base_data.loc[base_data.index == (target_date_ts - timedelta(days=1))].iloc[0]
@@ -226,7 +216,7 @@ try:
             feature_row['temp'] = forecasted_inputs['temp']
             feature_row['humidity'] = forecasted_inputs['humidity']
             feature_row['wind_speed'] = forecasted_inputs['wind_speed']
-            feature_row['aqi'] = forecasted_inputs['aqi'] # We provide this as it was trained on it
+            feature_row['aqi'] = forecasted_inputs['aqi']
             feature_row['co'] = forecasted_inputs['co']
             feature_row['no2'] = forecasted_inputs['no2']
             feature_row['o3'] = forecasted_inputs['o3']
@@ -278,25 +268,23 @@ try:
             
             feature_row['month'] = target_date_ts.month
 
-            # --- Predict! ---
             feature_df = pd.DataFrame([feature_row], columns=model_features)
 
             prediction = model.predict(feature_df)
             predicted_aqi = round(prediction[0])
             predictions.append({'date': target_date, 'predicted_aqi': predicted_aqi})
             
-            # --- Display in its own column ---
             with cols[i]:
                 st.metric(label=f"**{target_date.strftime('%A, %b %d')}**", value=int(predicted_aqi))
 
-            # --- Autoregressive Step ---
+            # Autoregressive Step
             forecasted_inputs_row = future_inputs_df.loc[future_inputs_df.index.date == target_date].iloc[0]
             new_row_data = forecasted_inputs_row.to_dict()
             new_row_data['us_aqi'] = predicted_aqi # Add the value we just predicted
             new_row_df = pd.DataFrame([new_row_data], index=[target_date_ts])
             base_data = pd.concat([base_data, new_row_df])
 
-    # --- 7. Final Output ---
+    # Final Output
     st.success("✅ Forecast Complete!")
     
     st.subheader("Forecast Chart")
@@ -312,4 +300,4 @@ try:
 
 except Exception as e:
     st.error(f"--- 🔴 An error occurred ---")
-    st.exception(e) # This will print the full traceback to the UI
+    st.exception(e)
