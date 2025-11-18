@@ -20,7 +20,6 @@ st.info("This dashboard uses a trained Gradient Boosting Regressor model to fore
 warnings.filterwarnings("ignore", category=UserWarning, message="The installed hopsworks client version")
 
 # Load Secrets (from Streamlit Secrets)
-# When you deploy, set these in Streamlit Cloud's 'Settings' -> 'Secrets'
 try:
     HOPSWORKS_KEY = os.environ.get("HOPSWORKS_API_KEY", st.secrets["HOPSWORKS_API_KEY"])
     API_KEY = os.environ.get("OPENWEATHER_API_KEY", st.secrets["OPENWEATHER_API_KEY"])
